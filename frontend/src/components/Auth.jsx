@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const API_BASE_URL = 'http://localhost:5000/api/auth';
 
-export default function Auth({ onAuthSuccess }) {
-  const [isLogin, setIsLogin] = useState(true);
+export default function Auth({ onAuthSuccess, initialMode = 'login', onModeChange }) {
+  const authContext = useAuth();
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
+  const [prevMode, setPrevMode] = useState(initialMode);
+
+  if (prevMode !== initialMode) {
+    setPrevMode(initialMode);
+    setIsLogin(initialMode === 'login');
+  }
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -73,10 +82,18 @@ export default function Auth({ onAuthSuccess }) {
 
       if (isLogin) {
         // User logged in: proceed to dashboard
-        onAuthSuccess(data);
+        if (onAuthSuccess) {
+          onAuthSuccess(data);
+        } else if (authContext?.login) {
+          authContext.login(data);
+        }
       } else {
         // User registered: switch to Login page, show success notification, and clear all inputs
-        setIsLogin(true);
+        if (onModeChange) {
+          onModeChange('login');
+        } else {
+          setIsLogin(true);
+        }
         setSuccessMessage('Account created successfully! Please sign in with your email and password.');
         setEmail('');
         setPassword('');
@@ -90,7 +107,12 @@ export default function Auth({ onAuthSuccess }) {
   };
 
   const toggleMode = () => {
-    setIsLogin((prev) => !prev);
+    const nextMode = isLogin ? 'register' : 'login';
+    if (onModeChange) {
+      onModeChange(nextMode);
+    } else {
+      setIsLogin((prev) => !prev);
+    }
     setError('');
     setSuccessMessage('');
     setName('');
@@ -197,7 +219,11 @@ export default function Auth({ onAuthSuccess }) {
                 type="button"
                 className={`pill-tab ${isLogin ? 'active' : ''}`}
                 onClick={() => {
-                  setIsLogin(true);
+                  if (onModeChange) {
+                    onModeChange('login');
+                  } else {
+                    setIsLogin(true);
+                  }
                   setError('');
                   setSuccessMessage('');
                 }}
@@ -208,7 +234,11 @@ export default function Auth({ onAuthSuccess }) {
                 type="button"
                 className={`pill-tab ${!isLogin ? 'active' : ''}`}
                 onClick={() => {
-                  setIsLogin(false);
+                  if (onModeChange) {
+                    onModeChange('register');
+                  } else {
+                    setIsLogin(false);
+                  }
                   setError('');
                   setSuccessMessage('');
                 }}

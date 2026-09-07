@@ -20,26 +20,62 @@ A clean, modern, and easy-to-use Expense Tracker built with the **MERN** stack (
 ```
 Expense tracker/
 ├── backend/
+│   ├── middleware/
+│   │   └── authMiddleware.js # JWT verification middleware
 │   ├── models/
-│   │   └── Expense.js       # Mongoose Schema
+│   │   ├── Expense.js        # Mongoose Expense Schema
+│   │   └── User.js           # Mongoose User Schema
 │   ├── routes/
-│   │   └── expenseRoutes.js # REST API endpoints (GET, POST, DELETE)
-│   ├── .env                 # Server PORT and MongoDB URI
+│   │   ├── authRoutes.js     # Auth API endpoints (/api/auth)
+│   │   └── expenseRoutes.js  # Expense REST API endpoints (/api/expenses)
+│   ├── .env                  # Server PORT and MongoDB URI
 │   ├── package.json
-│   └── server.js            # Express server entry point
+│   └── server.js             # Express server entry point
 │
 └── frontend/
     ├── src/
     │   ├── components/
-    │   │   ├── ExpenseForm.jsx    # Add expense form
-    │   │   ├── ExpenseList.jsx    # List with category filter & delete
-    │   │   └── ExpenseSummary.jsx # Total spending & metrics
-    │   ├── App.jsx                # Main React App & state
-    │   ├── index.css              # Modern UI styling
+    │   │   ├── layout/
+    │   │   │   ├── Navbar.jsx        # Navigation bar with active link indicators
+    │   │   │   └── AppLayout.jsx     # Shared layout shell with Navbar, notifications & footer
+    │   │   ├── Auth.jsx              # Split-screen Auth UI
+    │   │   ├── ExpenseForm.jsx       # Transaction entry form
+    │   │   ├── ExpenseList.jsx       # Search, filter, edit, delete & PDF export
+    │   │   └── ExpenseSummary.jsx    # Metrics cards
+    │   ├── context/
+    │   │   ├── AuthContext.jsx       # User authentication state & session
+    │   │   └── ExpenseContext.jsx    # Global expense data & operations
+    │   ├── pages/
+    │   │   ├── LoginPage.jsx         # /login page
+    │   │   ├── RegisterPage.jsx      # /register page
+    │   │   ├── DashboardPage.jsx     # / or /dashboard overview
+    │   │   ├── ExpensesPage.jsx      # /expenses full transaction history
+    │   │   ├── AddExpensePage.jsx    # /add-expense transaction creation
+    │   │   ├── AnalyticsPage.jsx     # /analytics financial breakdowns & insights
+    │   │   └── NotFoundPage.jsx      # 404 catch-all page
+    │   ├── routes/
+    │   │   └── AppRouter.jsx         # Central router for all pages with route guards
+    │   ├── App.jsx                   # Context providers & router root
+    │   ├── index.css                 # Modern responsive styling & design tokens
     │   └── main.jsx
     ├── index.html
     └── package.json
 ```
+
+---
+
+## 🧭 Page Routes
+
+| Route | Page Component | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `/login` | `LoginPage` | Public (guest only) | User login screen |
+| `/register` | `RegisterPage` | Public (guest only) | New user registration |
+| `/` or `/dashboard` | `DashboardPage` | Protected | Main overview, quick stats, quick add & recent transactions |
+| `/expenses` | `ExpensesPage` | Protected | Full transaction management, search, category filters & PDF export |
+| `/add-expense` | `AddExpensePage` | Protected | Dedicated expense / income entry form |
+| `/analytics` | `AnalyticsPage` | Protected | Category distribution bars, savings rate & cash flow analytics |
+| `*` | `NotFoundPage` | Public | Friendly 404 page with return to dashboard link |
+
 
 ---
 
